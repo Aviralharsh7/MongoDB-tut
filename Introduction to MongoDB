@@ -1,0 +1,13 @@
+1. What can we do with MongoDB atlas? 
+- acts as a platform where you store data.
+- embed search functionality into our database.
+- host a full application. 
+- send queries across multiple clusters and transform or move data across them.
+
+2. MongoDB Atlas Clusters 
+- Cluster is a group of servers which are connected via network. 
+- Cluster hold mutiple copies of our data. 
+- Servers are allocated based on geographic location, load balancing, traffic patterns, user proximity. 
+
+3. Deploying at Atlas Cluster
+- After adding sample data, the data size is 0.0B
