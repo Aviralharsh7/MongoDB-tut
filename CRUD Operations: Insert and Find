@@ -3,7 +3,7 @@
 - focus on bracket, comma syntax while inputting multiple documents
 
 2. find() 
-- syntax: db.<collection_name>.find()
+- syntax: db.<collection_name>.find(query, projection)
 - two types: 
   - find a key, value combo 
   - find a key and in place of giving specific value, provide a set of eligible values (in form of array)
