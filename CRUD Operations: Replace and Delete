@@ -1,0 +1,36 @@
+ 1. replaceOne () 
+- it replaces "documents"
+- syntax: db.books.replaceOne( filter, replacement, option)
+- here, filter can be objectId, etc
+        replacement ideally is exact copy with all fields having updated info.
+        option is optional to specify. rest out of course. 
+- original _id is intact after replacement. 
+
+2. updateOne() 
+- it updates "documents" 
+- syntax: db.books.updateOne( {filter doc}, {update doc}, {option object})
+- this method is used alongwith following operators: 
+  - $set: replaces value of a field.
+  - $push: appends value of a field.
+  - $upsert: it checks if filter is 1 or 0, and then inserts or updates value provided in "update"
+
+3. findAndModify()
+- syntax: 
+  db.podcasts.findAndModify({
+   query: {}, 
+   update: {}, 
+   new:true,
+   } 
+  )
+- here, new:true means updated document is returned. whereas false, document before updating is returned. 
+- we can also use upsert:true incase we want a new doc to be created.
+- this method does what updateOne() + findOne() does together but one imp diff is - bw the duration of updateOne() and findOne(), other user can change the data. This is prevented by using findAndModify(). 
+
+4. updateMany()
+- syntax: db.podcasts.updateMany({filter}, {update}, {options})
+- it does not roll back in case of failure. so partial updates are made and we have to redo it to complete leftover ones. 
+- it does not update in isolation and changes are relfected immediately (finance data).
+
+5. deleteOne() 
+- syntax: db.podcasts.deleteOne({filter}, {options}) 
+- similarly for deleteMany().
