@@ -1,0 +1,7 @@
+1. Operators
+- $set, $push, $pop 
+- $in, $inc, 
+
+2. Methods 
+- new Date()
+- ISODate()
