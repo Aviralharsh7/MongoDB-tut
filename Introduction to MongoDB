@@ -39,5 +39,31 @@
 - trivial 
 
 7. Connection Strings
-- 
+- two ways to connect: 
+  Standard format: connects to standalone clusters, sharded clusters or replica sets. 
+  DNS seed list format: provides DNS server list (this enables us to rotate servers without reconfig our clients) 
 
+- Its components are 
+  [[ mongodb+srv:// ]] - this is syntax, srv automatically sets TLS to true and connects via DNS seed list format.
+  [[ harshy2026:<password> ]] - created in atlas 
+  [[ @cluster001.k41lvvj.mongodb.net/ ]] - host, port. default port is 27.0.17 
+  [[ ?retryWrites=true&w=majority ]] - options. start w ?. 
+
+8. Connecting Shell 
+- MongoDB shell is a node.js REPL environment, thus giving access to JS variables, functions, control flow statements, etc inside the shell. 
+- Generate connection string in Atlas cluster, ensure mongosh is installed, paste string in CLI to create REPL environmet. TADA.
+
+9. Connecting mongoDB compass 
+- replica of atlas data explorer only. 
+- we can analyze data, makes queries on it, compose aggregation pipelines. 
+// data lake does it bw clusters and amazon s3. 
+// charts are for visualisation. 
+
+10. Connecting application
+- via mongodb drivers, we connect mongodb to our application with a programming language like js, python. 
+- refer to driver docs for more. https://www.mongodb.com/docs/drivers/?_ga=2.113696199.1950502909.1693804538-1468199963.1692365586
+
+11. Troubleshooting connection errors
+- make sure IP address is given access (via atlas). 
+- all components of connection string are correct like replace <password> 
+- check if you are connecting to right database deployement incase of bad auth error
