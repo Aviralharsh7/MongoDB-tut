@@ -1,0 +1,53 @@
+1. insertOne() , insertMany() 
+- syntax: db.<collection_name>.insertOne()
+- focus on bracket, comma syntax while inputting multiple documents
+
+2. find() 
+- syntax: db.<collection_name>.find()
+- two types: 
+  - find a key, value combo 
+  - find a key and in place of giving specific value, provide a set of eligible values (in form of array)
+  - set of value syntax: db.<collection_name>.find({"key": {$in ["item1", "item2"]} })
+
+3. Operator: gt, lt, gte, lte
+- simple math stuff
+- syntax: db.<collection_name>.find({"items.price": { $gt: 50}})
+- note: the dot notation to access sub key in a document. 
+- essentially we are again giving a set of value to match w a key.
+
+4. Run query over an array 
+- db.transactions.find(       // collection_name
+    { transactions:           // sub document or  primary key
+      { $elemMatch: 
+        { amount: { $lte: 4500},   // s-key, set of values
+        transaction_code: "sell"   // s-key, specific value
+        },
+      },
+    }
+  )
+
+- db.transactions.find( {      // returns only when it is an element of an array.
+    product: {
+      $elemMatch: { $eq: "Investment Banks" }      // $eq ensures that "product" contains an array
+      }
+    }
+  )
+
+
+5. Logical operators: $and , $or
+- syntax: db.airport.find({
+    $and: [ 
+      {"airline.name": "Air India"}, 
+      {"stops": { $gte: 1}} 
+    ]
+  })
+- theres an implicit way too but nvm.
+
+- syntax: db.airport.find({
+    $or: [
+      {"airline.name": "Akasa"},
+      {airplane = 320}
+    ]
+  })
+
+- important to note that implicit and is not used when nesting $or inside. since then last $or will overwrite all previous $or.
