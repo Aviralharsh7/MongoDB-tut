@@ -1,0 +1,25 @@
+1. sort () 
+- syntax: db.podcasts.find({category: "horror"}).sort({name:1});
+- wrt strings, 1 means ascending and -1 for descending. 
+- note that upper case are sorted first and grouped, then lowercase.
+- add {_id=1} to break tiebreakers and somewhat consistent order. 
+
+2. limit ()
+- save on processing, output top10, etc
+- syntax: db.podcasts.find({ category: "horror"}).limit(5);
+- 5 is count. 
+
+// note - for better readibility, add projections.
+          syntax: db.podcasts.find( {category:"horror"}, {name:1, number_of_guests:1}).sort({name:1}).limit(5)
+
+
+3. Projection 
+- syntax: db.inspections.find(
+            { sector: "Restaurant - 818" },
+            { business_name: 1, result: 1, _id: 0 }
+          )
+- here, 1 for inclusion, 0 for exclusion. 
+- a statement can have all 1s or all 0s. with only the exception of _id field.  
+
+4. Count documents
+- syntax: db.trips.countDocuments({ tripduration: {$gt:120}, usertype:"Subscriber" });
