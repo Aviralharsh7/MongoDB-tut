@@ -10,8 +10,39 @@
 
 2. Search with dynamic mapping
 - dynamic mapping searchs all fields and their nested fields whereas in static field only specified ones are. 
-- syntax: atlas clusters search indexes create --clusterName myAtlasClusterEDU -f /app/search_index.json
+- syntax: atlas clusters search indexes create --clusterName myAtlasClusterEDU -f /app/search_index.json   // creating search index over a cluster by providing a json file 
 - bug ??? db.sales.aggregate([ {$search: { index: "sample_supplies-sale-dynamic", text: {query: "notepad", path: {"wildcard": "*"}}}}, {$set: {score: {$meta: "searchScore"}}}])
+- example: 
+      {
+        "name": "sample_supplies-sales-facets",
+        "searchAnalyzer": "lucene.standard",
+        "analyzer": "lucene.standard",
+        "collectionName": "sales",
+        "database": "sample_supplies",
+        "mappings": {
+            "dynamic": true,
+            "fields": {
+            "purchaseMethod": [
+                {
+                "dynamic": true,
+                "type": "document"
+                },
+                {
+                "type": "string"
+                }
+            ],
+            "storeLocation": [
+                {
+                "dynamic": true,
+                "type": "document"
+                },
+                {
+                "type": "string"
+                }
+            ]
+            }
+        }
+      }
 
 3. Search with static mapping 
 - fields which are searched are fixed hence static. 
@@ -22,7 +53,7 @@ atlas clusters search indexes list --clusterName myAtlasClusterEDU --db sample_s
 4. Search with compound operators
 - clauses: must, not must, filter, should       // takes array as input 
 - filter clause does not contribute to score 
-- query types: text, range,
+- query types: text, range, date, path, boundaries 
 - example: 
   {
     "compound": {      // indicating it is a compound operator
@@ -42,7 +73,29 @@ atlas clusters search indexes list --clusterName myAtlasClusterEDU --db sample_s
     }
   }
 
-
+5. Search with FACETS
+- it is used to bucket search results coming from a particular field.
+- it uses aggregation stage: $searchMeta.
+- example: 
+  $searchMeta: {
+      "facet": {
+          "operator": {
+              "text": {
+              "query": ["Northern Cardinal"],
+              "path": "common_name"
+              }
+          },
+          "facets": {
+              "sightingWeekFacet": {
+                  "type": "date",
+                  "path": "sighting",
+                  "boundaries": [ISODate("2022-01-01"), 
+                      ISODate("2022-01-08"),
+                      ISODate("2022-01-15"),
+                      ISODate("2022-01-22")],
+                  "default" : "other"
+              }
+          }}}
 
 
   
