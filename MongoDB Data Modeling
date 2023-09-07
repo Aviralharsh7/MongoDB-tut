@@ -1,0 +1,48 @@
+1. Intro 
+- data modeling covers
+  - how our data is stored.
+  - rel bw different entities of our data.
+- good data model gives efficency in costs, computing, query, managing data.
+- mongodb has polymorphism documents and a flexible schema.
+- ability to nest doc enables building complex relationships.
+- data that is accessed together is kept together. 
+- having an application first approach and then defining your schema around it is good practise. 
+
+2. Data Relationships
+- one to one: bw fields of single docu
+- one to many: bw field having array values in single docu
+- many to many: 
+
+- way to model data:
+  - embedding: inserting/ declaring data in a document 
+  - referencing: refering others docu in a docu
+
+3. Embedding 
+- ideal for one to many, many to many.
+- it simplies queries.
+- single operation to read/update data.
+- makes good use of polymorphism.
+- it causes data duplication
+- warning: docu can get too large hence more loading in one go or, exceed BSON size limit of 16 MB.
+
+4. Referencing (or linking or data normalisation)
+- references save the _id field of one document in another document as a link between the two.
+- smaller documents
+- no duplication
+- causes multiple documents read for a single query hence lowers read speed
+
+5. Scaling data model 
+- what we optimise: query result time, memory usage, cpu usage, storage.
+- how? 
+  - avoid unbounded docs by referencing.
+  - unbounded might breach size limit, cause trouble in pagation
+- schema anti-patterns:
+  - massive arrays
+  - massive count of collections
+  - bloated documents
+  - unnecessary indexes or redundent ones
+  - queries without indexes 
+  - data accessed together but stored apart
+
+
+
