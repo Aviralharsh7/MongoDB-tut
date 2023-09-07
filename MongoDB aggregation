@@ -75,6 +75,7 @@
 
 9. $out stage
 - it creates or overwrites the document we get after an aggregation pipeline to a specified collection. 
+- this stage is written at last. 
 - we can also specify db name else it defaults to db of where aggregate() method was run. 
 - syntax: {
             $out: <collection_name>
