@@ -3,7 +3,7 @@
 - indexes have effect on write performance as they are also updated when we update or create documents. 
 - types are: 
   - single field: when index are on sinlge field in a document. can also multi key if that single field is an array. 
-  - compound: one index for multiple fields in a document. here order of field determines when they are sorted. note that multikey + compound field will have only array field and rest are scalar. 
+  - compound: one index for multiple (2 to 32) fields in a document. here order of field determines when they are sorted. note that multikey + compound field will have only array field and rest are scalar. 
   - multikey indexes: each element of array get an index. 
 
 2. Single field index
