@@ -1,0 +1,82 @@
+1. Intro 
+- Aggregation is analysis and summary/collection of data. 
+- Stages are the operations that user does on data.
+- Aggregation pipeline are a set of stages which are carried one at a time.     // order of stages MATTERS.
+- syntax:
+  db.collection.aggregate([      // aggregate() takes an array of aggregation stages to form the pipeline. 
+    $stage 1: {
+      {expression 1},
+      {expression 2}...
+    }
+    $stage 2: {
+    }
+  ])
+
+
+2. $match stage
+- it filters document who matches the specified query. 
+- syntax: db.zips.aggregate([
+            $match: { "field name": "value" }                   // $match takes a query. similar to findOne()
+          ])
+
+3. $group stage 
+- it groups "documents" by a group key specified by user. 
+- syntax: db.zips.aggregate([
+            $group: { 
+              _id: <expression>,                              // group key 
+              <field>: { <accumulator> : <expression> }       // accumulator is field we create. expression can contain operations. 
+             }
+          ])
+
+4. $sort stage 
+- taught before. 
+- syntax: db.zips.aggregate([
+            $sort: {
+                "field name" : 1        // -1 for descending
+            }
+          ])
+
+5. $limit stage
+- taught before.
+- syntax: db.zips.aggregate([
+            $limit: 5
+          ])
+
+6. $project stage 
+- it specifies the fields present in output document.
+- it can also be used to create or change the value of fields
+- this is similar to projection doc we used in find() method. 
+- this is usually the last stage written in aggregate() method. 
+- syntax: db.zips.aggregate([
+            $project: {
+              _id: 0,
+              population: "$pop",        // note how a new field is created and its value is mapped to already existing field. 
+              zip: 1
+            }
+          ])
+- example: db.sightings.aggregate([{ $match: { "species_common": "Eastern Bluebird", date: { $gt: ISODate(" 2022-01-01T00:00:00.000Z"), $lt: ISODate(" 2023-01-01T00:00:00.000Z")} },{ $count: "Bluebird_sightings_2022"} ]);
+
+7. $set stage 
+- it creates or changes an existing fields value and then outputs the new document. 
+- syntax: {
+            $set: {
+              place: {
+                $concat:["$city",",","$state"]     // $set: {field:value}
+              },
+              pop:10000
+            }
+          }
+
+8. $count stage
+- it creates a new document, with the number of documents at that stage in the aggregation pipeline assigned to the specified field name.
+- syntax: {
+            $count: <field name>
+          }
+
+9. $out stage
+- it creates or overwrites the document we get after an aggregation pipeline to a specified collection. 
+- we can also specify db name else it defaults to db of where aggregate() method was run. 
+- syntax: {
+            $out: <collection_name>
+          }
+
