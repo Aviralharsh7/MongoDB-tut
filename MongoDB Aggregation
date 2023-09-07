@@ -81,3 +81,5 @@
             $out: <collection_name>
           }
 
+10. $searchMeta stage 
+- written here https://github.com/Aviralharsh7/MongoDB-tut/edit/main/MongoDB%20Atlas%20Search  (POINT 5) 
