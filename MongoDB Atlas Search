@@ -1,0 +1,48 @@
+1. Relevence based search 
+- this is search for key terms. 
+- it searches in unstructured or semi structured database, as against the database search which searches in structured databases. 
+- it uses complex algo search engines:
+  - index and search analyser: lucene.standard
+  - dyanmic mapping
+  - field mapping 
+- its search indexes differ from database indexes which contained fields. search index looks like json file hmmm. 
+- it add a "score" field where the score is based on how much that record matches the search term and on the rules described in the index.
+
+2. Search with dynamic mapping
+- dynamic mapping searchs all fields and their nested fields whereas in static field only specified ones are. 
+- syntax: atlas clusters search indexes create --clusterName myAtlasClusterEDU -f /app/search_index.json
+- bug ??? db.sales.aggregate([ {$search: { index: "sample_supplies-sale-dynamic", text: {query: "notepad", path: {"wildcard": "*"}}}}, {$set: {score: {$meta: "searchScore"}}}])
+
+3. Search with static mapping 
+- fields which are searched are fixed hence static. 
+- code: 
+atlas clusters search indexes create --clusterName myAtlasClusterEDU -f /app/search_index.json
+atlas clusters search indexes list --clusterName myAtlasClusterEDU --db sample_supplies --collection sales
+
+4. Search with compound operators
+- clauses: must, not must, filter, should       // takes array as input 
+- filter clause does not contribute to score 
+- query types: text, range,
+- example: 
+  {
+    "compound": {      // indicating it is a compound operator
+      "must": [{       // classification
+        "text": {      // query type  
+          "query": "grasslands",          // this is value we searching for 
+          "path": "habitat"               // this is field which will contain our query (value)
+        }
+      }],
+      "should": [{
+        "range": {
+          "gte": 75,
+          "path": "wingspan_cm",
+          "score": {"constant": {"value": 5}}       // when field has value gte 75, then its score is given +5.
+        }
+      }]
+    }
+  }
+
+
+
+
+  
