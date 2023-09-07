@@ -1,6 +1,7 @@
 1. Operators
 - $set, $push, $pop 
 - $in, $inc, 
+- $sum, $multiply
 
 2. Methods 
 - new Date()
