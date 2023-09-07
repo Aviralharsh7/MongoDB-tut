@@ -1,0 +1,27 @@
+1. ACID transactions
+- group of database operations that execute all at once or none do.     // aka atomic transactions.
+- ACID stands for 
+  - atomicity: each transaction is all or nothing.
+  - consistency: gurrantees that data written is consistent with database's constraints.
+  - isolation: even if transaction run concurrently are dealt as sequential.
+  - durability: no data lost in event of power or hardware failure. 
+- used when transfer of record like payments, shopping cart, etc. 
+
+2. Types of ACID 
+- single
+  - single document operations like updateOne(), findOne() are by design ACID
+- multi 
+  - we need extra steps to convert multi doc operations into ACID
+  - since mongoDB locks all involved resources, so much higher performance cost is there, therefore good idea of your application needs is needed to implement these.
+  - use it as a precise tool for very certain use cases.
+
+3. Mutli doc transaction in shell  
+- start a session: has a runtime of 60 seconds
+- example: 
+    const session = db.getMongo().startSession()
+    session.startTransaction()
+    const account = session.getDatabase('< add database name here>').getCollection('<add collection name here>')
+    //Add database operations like .updateOne() here
+    session.commitTransaction()
+
+    session.abortTransaction()          // write this command before "session.comit" to abort the transaction.
