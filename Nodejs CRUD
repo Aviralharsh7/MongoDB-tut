@@ -1,0 +1,64 @@
+1. BSON 
+- more secure, more datatypes
+- optimised for transmission thru wire, storage retrieval       // since bson is binary encoded and json is text encoded
+
+2. how bson evolves in nodejs 
+- whole doc is alloted to a const variable
+- the _id is primary key which is prefixed by $ but is instantiated as an object: _id = new ObjectId(asfasfasf)
+- rest everthing is handled by the driver and is same for us. 
+- json.parse() is used to convert buffer strings to json.
+
+3. insertOne(), insertMany()
+- arguement: document which is a scalar or vector const variable.
+- returns: promise, aka the _id which driver automatically assigns since we didnt provide one. 
+- sytnax: let result= await accountsCollection.insertOne(sampleAccount)            
+- example:
+      const dbname = "bank"
+      const collection_name = "accounts"
+       
+      const accountsCollection = client.db(dbname).collection(collection_name)
+      
+      const sampleAccount = {
+       account_holder: "Linus Torvalds",
+       account_id: "MDB829001337",
+       account_type: "checking",
+       balance: 50352434,
+      }
+      
+      const main = async () => {
+       try {
+         await connectToDatabase()
+         // insertOne method is used here to insert the sampleAccount document
+         let result = await accountsCollection.insertOne(sampleAccount)                 // await tell nodejs to wait for the asynchronous func insertOne() to finish, then move to console.log
+         console.log(`Inserted document: ${result.insertedId}`)
+       } catch (err) {
+         console.error(`Error inserting document: ${err}`)
+       } finally {
+         await client.close()
+       }
+      } 
+      main()
+
+4. findOne(), find()
+- arguement: query
+- returns: cursor to doc which matches query        // if no match, then find() returns all docu in collection XD
+- example: 
+  const accountsCollection = client.db(dbname).collection(collection_name)
+  // Document used as a filter for the find() method
+  const documentsToFind = { balance: { $gt: 4700 } }
+
+  await connectToDatabase()
+  // find() method is used here to find documents that match the filter
+  let result = accountsCollection.find(documentsToFind)                   // note that await is not used here. synchronous? 
+  let docCount = accountsCollection.countDocuments(documentsToFind)
+  await result.forEach((doc) => console.log(doc))
+  console.log(`Found ${await docCount} documents`)
+
+
+
+
+
+
+
+
+
