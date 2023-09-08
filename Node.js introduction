@@ -1,0 +1,41 @@
+1. MongoDB drivers
+- they establish secure connections to clusters and execute database operations on behalf of client applications like nodejs
+- it has a builtin BSON package for nodejs 
+- they allow to specify settings like security, read isolation, write durability. 
+- an application uses single mongoClient instance for all databases requests (since creating mongoClient is resource intensive) 
+
+2. Connecting nodejs to cluster 
+- first, create nodejs app in your local
+- open this app in vscode 
+- install mongodb driver via npm
+- copy connection string and paste it in uri file in node app 
+- to load the uri config into app, create app.js file to make an entry point and import the mongo client. 
+- next, we have to connection to cluster: const client = new MongoClient (uri)
+- now, we create a connectToDatabase function and wrap it with main()
+- tada
+
+- lab example:
+    const { MongoClient } = require("mongodb")                                                          // Require MongoDB language driver
+    const uri = 'mongodb+srv://myAtlasDBUser:myatlas-001@myatlasclusteredu.ro2xxli.mongodb.net'         // Set the value of uri to your Atlas connection string.
+    const client = new MongoClient(uri)                                                                 // Create the MongoClient instance
+    
+    const main = async () => {                              // Establishes a connection to the database using the MongoClient instance
+       try {
+          await client.connect()                             // here client is connected to database. 
+          console.log("Connected to MongoDB Atlas!")
+          const dbs = await client.db().admin().listDatabases()           // list out all the databases in the cluster
+          console.table(dbs.databases)
+       } catch (error) {
+          console.error(error)
+       } finally {
+          await client.close()
+       }
+    }
+    // Run the  function, catch any errors and finally close the connection when the main function is done
+    main()
+       .catch((err) => console.log(err))
+       .finally(() => client.close())
+
+3. Common errors
+- network connections errors: ip address not registered 
+- user authentication errors: any part of connection string is mispelled 
