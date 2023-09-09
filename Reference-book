@@ -1,7 +1,7 @@
 1. Operators
 - $set, $push, $pop 
 - $in, $inc, 
-- $sum, $multiply
+- $sum, $multiply, $divide 
 - $toUpper 
 
 2. Methods 
