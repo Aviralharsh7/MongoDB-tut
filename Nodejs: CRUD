@@ -40,6 +40,7 @@
       main()
 
 4. findOne(), find()
+- await only for findOne()
 - arguement: query
 - returns: cursor to doc which matches query        // if no match, then find() returns all docu in collection XD
 - example: 
@@ -54,11 +55,116 @@
   await result.forEach((doc) => console.log(doc))
   console.log(`Found ${await docCount} documents`)
 
+5. update() 
+- await is standard
+- it updates the value of an existing field in a docu 
+- results: result object which is stored in a variable
+- syntax: <collection>.updateOne(<filter>, <update>);
+- example: 
+            const database = client.db(dbname);
+            const bank = database.collection(collection_name);
+            const documentsToUpdate = { account_type: "checking" };
+            const update = { $push: { transfers_complete: "TR413308000" } }               // using operators, here curlies are involved.
+            const main = async () => {
+              try {
+                await connectToDatabase()
+                let result = await accountsCollection.updateMany(documentsToUpdate, update)        // note that await is used with updateMany
+                result.modifiedCount > 0
+                  ? console.log(`Updated ${result.modifiedCount} documents`)         // ternary operator used here 
+                  : console.log("No documents updated")
+              } catch (err) {
+                console.error(`Error updating documents: ${err}`)
+              } finally {
+                await client.close()
+              }
+            }
+            main()
 
+6. delete()
+- await is standard 
+- it deletes the matching documents (not fields fyi) 
+- returns: boolean property "acknowledged" and deleteCount property set to number
+- syntax: <collection>.deleteOne(<filter>)
+- if empty query filter, then 
+      - deleteOne: matches and deletes the first document in collection
+      - deleteMany: deletes all doc in collection.
+- example: 
+      const dbname = "bank"
+      const collection_name = "accounts"
+      const accountsCollection = client.db(dbname).collection(collection_name)     // client here is cluster right?? - nope. variable we created when importing connection string
+      const documentsToDelete = { balance: { $lt: 500 } }
+      const main = async () => {
+       try {
+         await connectToDatabase()
+         let result = await accountsCollection.deleteMany(documentsToDelete)
+         result.deletedCount > 0
+           ? console.log(`Deleted ${result.deletedCount} documents`)
+           : console.log("No documents deleted")
+       } catch (err) {
+         console.error(`Error deleting documents: ${err}`)
+       } finally {
+         await client.close()
+       }
+      }
+      main()
 
+7. Creating multi doc transaction in nodejs 
+- ACID stuff (atomicity is square 1 property) 
+- important to release resources by ending session, closing client since performance heavy stuff 
+- step by step:
+      1. create variables to be used in transactions 
 
+            const accounts = client.db("bank").collection("accounts")
+            const transfers = client.db("bank").collection("transfers")
+            let account_id_sender = "MDB574189300"
+            let account_id_receiver = "MDB343652528"
+            let transaction_amount = 100
 
+      2. start a new session
+            const session = client.startSession()      // be default 60 seconds timer starts
 
+3. Begin a transaction
+      const transactionResults = await session.withTransaction(async () => {         // withTransaction() returns a promise 
+      })
 
+4. update the balance of sender and receiver account 
+      const senderUpdate = await accounts.updateOne(
+            {account_id: account_id_sender}, { $inc: { balance: -transaction_amount }}, {session}        // session is an "option"
+      )
 
+      const receiverUpdate = await accounts.updateOne(
+            {account_id: account_id_receiver}, { $inc: { balance: + transaction_amount}}, {session}
+      )
 
+5. update transfers collection by creating a new docu reflecting this transaction
+      const transfer = {
+            transfer_id: "TR21872187",
+            amount: transaction_amount,
+            from_account: account_id_sender,
+            to_account: account_id_receiver,
+      }
+      const insertTransferResults = await transfers.insertOne(transfer, {session})
+
+6. Update the complete status of transaction in senders and receivers account 
+      const updateSenderTransferResults = await accounts.updateOne(
+            {account_id: account_id_sender}, {$push: {transfers_complete: transfer.transfer_id}, {session}}
+      )
+      const updateReceiverTransferResults = await accounts.updateOne(
+            {account_id: account_id_receiver), {$push: {transfers_complete: transfers.transfer_id}, {session}
+      }
+
+7. log the result message 
+      if (transactionResults){                                          // coming from step 3 i.e after function is complete 
+            console.log("Transaction completed successfully.")
+      } else {
+        console.log("Transaction failed.")
+      }
+
+8. make a try catch block 
+      } catch (err) {
+        console.error(`Transaction aborted: ${err}`)
+        process.exit(1)
+      } finally {
+        await session.endSession()            // important af step 
+        await client.close()
+      }
