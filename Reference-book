@@ -2,6 +2,7 @@
 - $set, $push, $pop 
 - $in, $inc, 
 - $sum, $multiply
+- $toUpper 
 
 2. Methods 
 - new Date()
