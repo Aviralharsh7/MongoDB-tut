@@ -1,0 +1,93 @@
+1. Aggregation framework 
+- we are basically transforming data here via pipeline 
+- use find() first, then go to aggregation which is superset of find() 
+- it is array of discrete stages (and expression operators inside them) where output of one stage acts as input for other 
+- multiple stages form a pipeline 
+- used for finding, sorting, grouping, projecting
+- makes debug, optimise, rewrite easy since fragmentation (just like functions ig) 
+
+via chatgpt: 
+In the context of databases, especially NoSQL databases like MongoDB, CRUD operations and pipeline stages are related concepts, but they serve different purposes.
+CRUD Operations (Create, Read, Update, Delete):
+Create: Creating or inserting new data into the database. In MongoDB, this is typically done using operations like insertOne or insertMany.
+Read: Retrieving data from the database. Common read operations in MongoDB include find, findOne, and aggregate (for more complex queries).
+Update: Modifying existing data in the database. In MongoDB, you can use methods like updateOne, updateMany, or findOneAndUpdate to perform updates.
+Delete: Removing data from the database. MongoDB provides methods like deleteOne, deleteMany, or findOneAndDelete for deletion operations.
+
+
+2. four types of stages here 
+
+- $match:
+  - filter documents
+  - syntax: $match: {filter1, filter2.. filterN}
+
+- $group: 
+  - separates doc wrt group key and output one doc for each unique key
+  - sytnax: $group:{group key, calculatios} 
+- example: 
+      i. define variables 
+          const client = new MongoClient(uri)
+          const dbname = "bank";
+          const collection_name = "accounts";
+          const accountsCollection = client.db(dbname).collection(collection_name);
+      
+      ii. build the pipeline 
+            const pipeline = [
+              // Stage 1: match the accounts with a balance greater than $1,000
+              { $match: { balance: { $lt: 1000 } } },
+              // Stage 2: Calculate average balance and total balance
+              {
+                $group: {
+                  _id: "$account_type",
+                  total_balance: { $sum: "$balance" },       // note the $ sign and double quotes here 
+                  avg_balance: { $avg: "$balance" },
+                },
+              },
+            ]
+      
+      iii. run the pipeline 
+      
+            const main = async () => {
+              try {
+                await client.connect()
+                console.log(`Connected to the database 🌍. \nFull connection string: ${safeURI}`)
+                let result = await accountsCollection.aggregate(pipeline)
+                for await (const doc of result) {
+                  console.log(doc)
+                }
+              } catch (err) {
+                console.error(`Error connecting to the database: ${err}`)
+              } finally {
+                await client.close()
+              }
+            }
+            main()
+
+- $sort:
+  - sorts all input docu
+  - docu can be sorted in numerical, alphabetical, ascending, or descending order.
+
+- $project: 
+  - passes doc with specified fields to next stage of pipeline 
+  - fields can be existed or creates new 
+
+- example: 
+    const pipeline = [
+      // Stage 1: $match - filter the documents (checking, balance >= 1500)
+      { $match: { account_type: "checking", balance: { $gte: 1500 } } },
+    
+      // Stage 2: $sort - sorts the documents in descending order (balance)
+      { $sort: { balance: -1 } },
+    
+      // Stage 3: $project - project only the requested fields and one computed field (account_type, account_id, balance, gbp_balance)
+      {
+        $project: {
+          _id: 0,
+          account_id: 1,
+          account_type: 1,
+          balance: 1,
+          // GBP stands for Great British Pound
+          gbp_balance: { $divide: ["$balance", 1.3] },           // note that $divide is taking [ ] for input 
+        },
+      },
+    ]
